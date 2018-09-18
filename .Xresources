@@ -1,0 +1,5 @@
+URxvt.font: xft:inconsolata:size=13
+URxvt.scrollBar: false
+
+URxvt.transparent: true
+URxvt.shading: 10
