@@ -36,8 +36,8 @@ colors() {
 # Change the window title of X terminals
 case ${TERM} in
 	xterm*|rxvt*|Eterm*|aterm|kterm|gnome*|interix|konsole*)
-		# PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\007"'
-		PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/\~}\007"'
+		PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\007"'
+		# PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/\~}\007"'
 		;;
 	screen*)
 		PROMPT_COMMAND='echo -ne "\033_${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/\~}\033\\"'
@@ -73,10 +73,23 @@ if ${use_color} ; then
 	# Typical style of the thingy before $ for a user
 	if [[ ${EUID} == 0 ]] ; then
 		# PS1='\[\033[01;31m\][\h\[\033[01;36m\] \W\[\033[01;31m\]]\$\[\033[00m\] '
-		PS1='\W\[\033[01;31m\]]\$\[\033[00m\] '
-	else
+
+		# Minimalist version		
+		# PS1='\W\[\033[01;31m\]]\$\[\033[00m\] '
+
+		PS1='\$PWD\[\033[01;31m\]]\$\[\033[00m\] '
+	else 
+	    	# This is the PS1 that has to be set as the default one, as normal user
+
+	  	# Original
 		# PS1='\[\033[01;32m\][\u@\h\[\033[01;37m\] \W\[\033[01;32m\]]\$\[\033[00m\] '
-		PS1='\[\033[01;32m\][\[\033[01;37m\]\W\[\033[01;32m\]]\$\[\033[00m\] '
+
+		# Absolute path but with tilde instead of "/home/USERNAME"
+		# path=${PWD/#$HOME/'~'} 
+		PS1='\[\033[01;32m\][\[\033[01;37m\]$(path="${PWD/#$HOME/'~'}")\w\[\033[01;32m\]]\$\[\033[00m\] '
+
+		# Minimalist (only top directory)
+		# PS1='\[\033[01;32m\][\[\033[01;37m\]\W\[\033[01;32m\]]\$\[\033[00m\] '
 	fi
 
 	alias ls='ls --color=auto'
@@ -87,10 +100,12 @@ else
 	if [[ ${EUID} == 0 ]] ; then
 		# show root@ when we don't have colors
 		# PS1='\u@\h \W \$ '
-		PS1='\W \$ '
+		# PS1='\W \$ '
+		PS1='\$PWD \$ '
 	else
 		# PS1='\u@\h \w \$ '
-		PS1='\w \$ '
+		# PS1='\w \$ '
+		PS1='\$PWD \$ '
 	fi
 fi
 
@@ -147,22 +162,31 @@ ex ()
 # better yaourt colors
 export YAOURT_COLORS="nb=1:pkg=1:ver=1;32:lver=1;45:installed=1;42:grp=1;34:od=1;41;5:votes=1;44:dsc=0:other=1;35"
 
-# START OF USER DEFINED OPTIONS
+#################################
+# START OF USER DEFINED OPTIONS #
+#################################
 
 # Aliases
+alias userhelp='echo just visit ~/.bashrc'
+
 alias ts3='exec ~/TeamSpeak3/ts3client_runscript.sh &>/dev/null & disown'
 alias screenshot='xfce4-screenshooter'
 alias image='sixv'
 # I don't know what is this weird error in nitrogen...
 alias images='nitrogen $PWD 2>&1 &>/dev/null & disown' 
+alias steam='steam 2>&1 &>/dev/null & disown' 
 
 # alias reload-vim='. /etc/vimrc'
 
-# Path to user-defined scripts
-export PATH=$PATH:~/git/mine/scripts-bash
+# This is set in .bash_profile
+## Path to user-defined scripts
+#export PATH=$PATH:~/git/mine/scripts-bash
 
 # Theme recovery
 wal -R > /dev/null
 
 # Enable vim mode in terminal
 set -o vi
+
+# Change language to polish
+setxkbmap pl
