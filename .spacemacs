@@ -1,3 +1,4 @@
+
 ;; -*- mode: emacs-lisp -*-
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
@@ -34,6 +35,7 @@ values."
    dotspacemacs-configuration-layers
    '(
      windows-scripts
+     windows-scripts
      autohotkey
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
@@ -46,7 +48,9 @@ values."
      emacs-lisp
      git
      (c-c++ :variables
-            c-c++-default-mode-for-headers 'c++-mode)
+            c-c++-default-mode-for-headers 'c++-mode
+            c-c++-enable-clang-support t
+            c-c++-enable-rtags-support t)
      ;; markdown
      ;; org
      ;; (shell :variables
@@ -55,7 +59,6 @@ values."
      ;; spell-checking
      syntax-checking ;; Basically, flycheck
      ;; version-control
-     auto-completion
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -66,6 +69,7 @@ values."
                                       yasnippet-snippets ; Snippet manager. Needed here to fix the bugs...
                                       cmake-mode         ; Basic CMake support in editor
                                       ;; gruvbox-theme   ; Presumably it's going to be fixed soon(tm)
+                                      rtags
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -424,7 +428,7 @@ you should place your code here."
    ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
  '(package-selected-packages
    (quote
-    (flycheck-pos-tip pos-tip flycheck cmake-mode powershell disaster company-c-headers cmake-mode clang-format yasnippet-snippets smeargle orgit magit-gitflow magit-popup helm-gitignore helm-company helm-c-yasnippet gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link fuzzy evil-magit magit transient git-commit with-editor company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ahk-mode rainbow-mode ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag golden-ratio flx-ido flx fill-column-indicator eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async sublime-themes))))
+    (yasnippet-snippets cmake-ide flycheck company google-translate fancy-battery helm-rtags flycheck-rtags company-rtags rtags flycheck-pos-tip pos-tip cmake-mode powershell disaster company-c-headers cmake-mode clang-format smeargle orgit magit-gitflow magit-popup helm-gitignore helm-company helm-c-yasnippet gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link fuzzy evil-magit magit transient git-commit with-editor company-statistics auto-yasnippet yasnippet ac-ispell auto-complete ahk-mode rainbow-mode ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag golden-ratio flx-ido flx fill-column-indicator eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async sublime-themes))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -447,8 +451,16 @@ you should place your code here."
 ;;    '<,'>s/\\/\//g
 
 (setq shell-command-dont-erase-buffer 1)
-(setq compile-command "@call \"..\\build\\cmake_vs_64.bat\"")
+
+(cond
+  ((eq system-type 'windows-nt) (setq compile-command "@call \"..\\build\\cmake_vs_64.bat\""))
+  ((eq system-type 'gnu/linux) (setq compile-command "./../build/cmake_clang.sh"))
+  )
+
+(add-hook 'c-mode-hook 'rtags-start-process-unless-running)
+(add-hook 'c++-mode-hook 'rtags-start-process-unless-running)
 
 ;; TODO: Fix the powerline / mode-line colors, cause they are hideous D:
-;; TODO: Add g C-a to increase numbers in column, just like in Vanila Vim
+;; TODO: Add g C-a to increase numbers in column, just like in Vanilla Vim
 ;; TODO: Finish configuration of rtags, irony and cmake-ide
+;; TODO: Create aliases for rtags, preferably under ", r" family of keys
